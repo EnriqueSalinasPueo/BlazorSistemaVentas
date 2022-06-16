@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace BlazorSistemaVentas_Repositories
 {
-    public class ProductCategoryRepositiry : IProductCategoryRepositiry
+    public class ProductCategoryRepository : IProductCategoryRepository
     {
         private readonly IDbConnection _dbConnection;
-        private readonly ILogger<ProductCategoryRepositiry> _logger;
+        private readonly ILogger<ProductCategoryRepository> _logger;
 
-        public ProductCategoryRepositiry(IDbConnection dbConnection, ILogger<ProductCategoryRepositiry> logger)
+        public ProductCategoryRepository(IDbConnection dbConnection, ILogger<ProductCategoryRepository> logger)
         {
             _dbConnection = dbConnection;
             _logger = logger;
@@ -24,11 +24,11 @@ namespace BlazorSistemaVentas_Repositories
             var sql = @"SELECT Id as Id, Name as Name
                         FROM ProductCategories";
 
-            _logger.LogInformation("INICIO - Repositiry ProductCategoryRepositiry GetAll SQL: " + sql);
+            _logger.LogInformation($"INICIO - GetAll SQL: {sql}");
 
             IEnumerable<ProductCategory> list = await _dbConnection.QueryAsync<ProductCategory>(sql, new { });
 
-            _logger.LogInformation("FIN - Repositiry ProductCategoryRepositiry GetAll respuesta: " + list);
+            _logger.LogInformation($"FIN - GetAll respuesta: {list}");
 
             return list;
         }

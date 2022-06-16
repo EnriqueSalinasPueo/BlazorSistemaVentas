@@ -43,7 +43,9 @@ namespace BlazorSistemaVentas.Server
 
             string dbConnectionString = this.Configuration.GetConnectionString("DefaultConnection");
             services.AddSingleton<IDbConnection>((sp) => new SqlConnection(dbConnectionString));
-            services.AddScoped<IProductCategoryRepositiry, ProductCategoryRepositiry>();
+
+            services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

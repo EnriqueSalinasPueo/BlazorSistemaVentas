@@ -12,11 +12,11 @@ namespace BlazorSistemaVentas.Server.Controllers
     [ApiController]
     public class ProductCategoryController : ControllerBase
     {
-        private readonly IProductCategoryRepositiry _iProductCategoryRepository;
+        private readonly IProductCategoryRepository _iProductCategoryRepository;
 
         private readonly ILogger<ProductCategoryController> _logger;
 
-        public ProductCategoryController(IProductCategoryRepositiry iProductCategoryRepository, ILogger<ProductCategoryController> logger)
+        public ProductCategoryController(IProductCategoryRepository iProductCategoryRepository, ILogger<ProductCategoryController> logger)
         {
             _iProductCategoryRepository = iProductCategoryRepository;
             _logger = logger;
@@ -25,11 +25,11 @@ namespace BlazorSistemaVentas.Server.Controllers
         [HttpGet]
         public async Task<IEnumerable<ProductCategory>> Get()
         {
-            _logger.LogInformation("INICIO - Controller ProductCategoryController Get");
+            _logger.LogInformation($"INICIO - Get");
 
             IEnumerable<ProductCategory> list = await _iProductCategoryRepository.GetAll();
 
-            _logger.LogInformation("FIN - Controller ProductCategoryController Get list: " + list);
+            _logger.LogInformation($"FIN - Get respuesta: {list}" );
 
             return list;
         }

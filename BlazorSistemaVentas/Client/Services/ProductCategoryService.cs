@@ -19,13 +19,14 @@ namespace BlazorSistemaVentas.Client.Services
         }
         public async Task<IEnumerable<ProductCategory>> GetAll()
         {
-            _logger.LogInformation("INICIO - Service ProductCategoryService GetAll");
+            _logger.LogInformation($"INICIO - GetAll");
 
             IEnumerable<ProductCategory> list = await _httpclient.GetFromJsonAsync<IEnumerable<ProductCategory>>($"api/ProductCategory");
 
-            _logger.LogInformation("FIN - Service ProductCategoryService GetAll list: " + list);
+            _logger.LogInformation($"FIN - GetAll list: {list}");
 
             return list;
         }
+
     }
 }

@@ -1,20 +1,35 @@
 ﻿@page "/orderdetails"
 
 @inject IProductCategoryService ProductCategoryService
+@inject IProductService ProductService
 
 <h2>OrderDatails</h2>
 <p>@Message</p>
 
-@if (Order != null && productCategories != null)
+@if (Order != null && ProductCategories != null)
 {
-    <EditForm Model="Order">
-        <InputSelect class="form-control col-sm-5" @bind-Value="@Order.ProductCategoryId">
-            @foreach (var item in productCategories)
-                {
-                <option value="@item.Id">@item.Name</option>
-                }
-        </InputSelect>
-    </EditForm>
+<EditForm Model="Order">
+
+    <label>Categories</label>
+    <InputSelect class="form-control col-sm-5"
+                 Value="@Order.ProductCategoryId"
+                 ValueChanged="@((int productCategoryId) => ProductCategoryChanged(productCategoryId))"
+                 ValueExpression="@(() => Order.ProductCategoryId)">
+        @foreach (var item in ProductCategories)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </InputSelect>
+
+    <label>Producto</label>
+    <InputSelect class="form-control col-sm-5" @bind-Value="@ProdutcId">
+        @foreach (var item in Product)
+            {
+            <option value="@item.Id">@item.Name</option>
+            }
+    </InputSelect>
+
+</EditForm>
 }
 else
 {
@@ -25,26 +40,45 @@ else
 @code {
 
     public Order Order;
-    public IEnumerable<ProductCategory> productCategories;
+    public IEnumerable<ProductCategory> ProductCategories;
+    public IEnumerable<Product> Product;
     public string Message { get; set; }
+    public int ProdutcId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Order = new Order();
+            Order = new Order() { ProductCategoryId = 1 };
 
             Console.WriteLine("INICIO - Cliente llamada Service" + Order);
 
-            productCategories = await ProductCategoryService.GetAll();
+            ProductCategories = await ProductCategoryService.GetAll();
 
-            Console.WriteLine("FIN - Cliente categorias cargadas Service" + productCategories);
+            await LoadProducts(Order.ProductCategoryId);
+
+            Console.WriteLine("FIN - Cliente categorias cargadas Service" + ProductCategories);
 
         }
         catch (Exception e)
         {
             Message = "Error..." + e.Message;
         }
+    }
+
+    protected async Task ProductCategoryChanged(int productCategoryId)
+    {
+        Order.ProductCategoryId = productCategoryId;
+
+        if (Order.ProductCategoryId > 0)
+        {
+            await LoadProducts(Order.ProductCategoryId);
+        }
+    }
+
+    private async Task LoadProducts(int productCategoryId)
+    {
+        Product = await ProductService.GetByCategory(productCategoryId);
     }
 
 }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace BlazorSistemaVentas_Repositories
 {
-    public interface IProductCategoryRepositiry
+    public interface IProductCategoryRepository
     {
         Task<IEnumerable<ProductCategory>> GetAll();
     }

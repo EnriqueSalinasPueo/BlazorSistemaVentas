@@ -7,9 +7,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.17" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BlazorSistemaVentas-Repositories\BlazorSistemaVentas.Repositories.csproj" />
     <ProjectReference Include="..\Client\BlazorSistemaVentas.Client.csproj" />
     <ProjectReference Include="..\Shared\BlazorSistemaVentas.Shared.csproj" />
   </ItemGroup>

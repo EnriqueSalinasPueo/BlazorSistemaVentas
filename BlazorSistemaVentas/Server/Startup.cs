@@ -1,15 +1,15 @@
 using BlazorSistemaVentas.Server.Data;
 using BlazorSistemaVentas.Server.Models;
+using BlazorSistemaVentas_Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
+using System.Data;
 
 namespace BlazorSistemaVentas.Server
 {
@@ -40,6 +40,10 @@ namespace BlazorSistemaVentas.Server
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+
+            string dbConnectionString = this.Configuration.GetConnectionString("DefaultConnection");
+            services.AddSingleton<IDbConnection>((sp) => new SqlConnection(dbConnectionString));
+            services.AddScoped<IProductCategoryRepositiry, ProductCategoryRepositiry>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

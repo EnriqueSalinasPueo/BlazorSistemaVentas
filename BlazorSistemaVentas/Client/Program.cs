@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using MudBlazor.Services;
 
 namespace BlazorSistemaVentas.Client
 {
@@ -29,6 +30,8 @@ namespace BlazorSistemaVentas.Client
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IOrderService, OrderService>();
             builder.Services.AddScoped<IClientService, ClientService>();
+
+            builder.Services.AddMudServices();
 
             builder.Services.AddApiAuthorization();
 

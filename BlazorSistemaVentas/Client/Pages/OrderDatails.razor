@@ -7,10 +7,11 @@
 @inject IClientService ClientService
 @inject IOrderService OrderService
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 
 <p>@Message</p>
 
-@if (Order != null && ProductCategories != null && clients != null)
+@if (Order != null && clients != null)
 {
     <EditForm Model="Order">
 
@@ -67,32 +68,21 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <input type="submit" class="btn btn-primary" value="Add Product" @onclick="AddProduct" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+
+                        </div>
+                    </div>
 
                 </div>
             </div>
         </div>
-
-
-
-        <label>Categories</label>
-        <InputSelect class="form-control col-sm-5"
-                     Value="@Order.ProductCategoryId"
-                     ValueChanged="@((int productCategoryId) => ProductCategoryChanged(productCategoryId))"
-                     ValueExpression="@(() => Order.ProductCategoryId)">
-            @foreach (var item in ProductCategories)
-            {
-                <option value="@item.Id">@item.Name</option>
-            }
-        </InputSelect>
-
-        <label>Producto</label>
-        <InputSelect class="form-control col-sm-5" @bind-Value="@ProdutcId">
-            @foreach (var item in Product)
-                {
-                <option value="@item.Id">@item.Name</option>
-                }
-        </InputSelect>
-
     </EditForm>
 }
 else
@@ -104,11 +94,8 @@ else
 @code {
 
     public Order Order;
-    public IEnumerable<ProductCategory> ProductCategories;
-    public IEnumerable<Product> Product;
     public IEnumerable<BlazorSistemaVentas.Shared.Client> clients;
     public string Message { get; set; }
-    public int ProdutcId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,36 +103,13 @@ else
         {
             Order = new Order() { ProductCategoryId = 1, OrderDate = DateTime.Today, DeliveryDate = DateTime.Today };
 
-            Console.WriteLine("INICIO - Cliente llamada Service" + Order);
-
-            ProductCategories = await ProductCategoryService.GetAll();
-
             clients = await ClientService.GetAllClients();
-
-            await LoadProducts(Order.ProductCategoryId);
-
-            Console.WriteLine("FIN - Cliente categorias cargadas Service" + ProductCategories);
 
         }
         catch (Exception e)
         {
             Message = "Error..." + e.Message;
         }
-    }
-
-    protected async Task ProductCategoryChanged(int productCategoryId)
-    {
-        Order.ProductCategoryId = productCategoryId;
-
-        if (Order.ProductCategoryId > 0)
-        {
-            await LoadProducts(Order.ProductCategoryId);
-        }
-    }
-
-    private async Task LoadProducts(int productCategoryId)
-    {
-        Product = await ProductService.GetByCategory(productCategoryId);
     }
 
     protected async Task SaveOrder()
@@ -162,5 +126,27 @@ else
     protected void Cancel()
     {
         NavigationHome();
+    }
+
+    protected async Task AddProduct()
+    {
+        // Ventana popap en la que instanciamos el dialog y lo mostrarlo
+        var dialog = DialogService.Show<ProductDetails>("Product Details");
+
+        // Le decimos al hilo de ejecucion que se espere a mostrar el resultado
+        var result = await dialog.Result;
+
+        // Si el resultado es verdadero lo agregamos a la lista de ordenes
+        if (!result.Cancelled)
+        {
+            var product = (Product)result.Data;
+
+            if (Order.Products == null)
+            {
+                Order.Products = new List<Product>();
+            }
+
+            Order.Products.Add(product);
+        }
     }
 }

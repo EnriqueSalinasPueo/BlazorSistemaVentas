@@ -14,7 +14,7 @@ namespace BlazorSistemaVentas.Shared
         public DateTime OrderDate { get; set; }
         public DateTime DeliveryDate { get; set; }
         public decimal Total { get; set; }
-
         public int ProductCategoryId { get; set; }
+        public  List<Product> Products { get; set; }
     }
 }

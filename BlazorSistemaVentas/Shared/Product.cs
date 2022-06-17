@@ -13,5 +13,8 @@ namespace BlazorSistemaVentas.Shared
         public decimal Price { get; set; }
         public int ProductCategoryId { get; set; }
 
+        // Propiedad para la tabla OrderProducts
+        public int Quantity { get; set; }
+
     }
 }

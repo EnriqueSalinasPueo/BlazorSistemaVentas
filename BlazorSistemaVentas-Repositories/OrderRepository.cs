@@ -21,6 +21,20 @@ namespace BlazorSistemaVentas_Repositories
             _logger = logger;
         }
 
+        public async Task<int> GetNextNumber()
+        {
+            var sql = @"SELECT MAX(OrderNumber) + 1
+                        FROM Orders";
+
+            _logger.LogInformation($"INICIO - GetNextNumber SQL: {sql}");
+
+            var request = await _dbConnection.ExecuteAsync(sql, new { });
+
+            _logger.LogInformation($"FIN - GetNextNumber respuesta: {request}");
+
+            return request;
+        }
+
         public async Task<bool> InserOrder(Order order)
         {
             var sql = @"INSERT INTO Orders (OrderNumber, ClientId, OrderDate, DeliveryDate, TotalOrders)

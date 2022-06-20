@@ -19,13 +19,24 @@ namespace BlazorSistemaVentas.Client.Services
             _logger = logger;
         }
 
+        public async Task<int> GetNextNumber()
+        {
+            _logger.LogInformation($"INICIO - GetNextNumber");
+
+            var result = await _httpclient.GetFromJsonAsync<int>($"api/order/GetNextNumber");
+
+            _logger.LogInformation($"FIN - GetNextNumber result; {result}");
+
+            return result;
+        }
+
         public async Task SaveOrder(Order order)
         {
             _logger.LogInformation($"INICIO - SaveOrder");
 
             if (order.Id == 0)
             {
-                await _httpclient.PostAsJsonAsync<Order>($"api/order/",order);
+                await _httpclient.PostAsJsonAsync<Order>($"api/order/", order);
             }
             else
             {

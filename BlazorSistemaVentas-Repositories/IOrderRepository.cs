@@ -10,5 +10,6 @@ namespace BlazorSistemaVentas_Repositories
     public interface IOrderRepository
     {
         Task<bool> InserOrder(Order order);
+        Task<int> GetNextNumber();
     }
 }

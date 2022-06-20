@@ -46,9 +46,22 @@ namespace BlazorSistemaVentas.Server.Controllers
 
             var request = await _iOrderRepository.InserOrder(order);
 
-            _logger.LogInformation($"FIN - Get request: {request}");
+            _logger.LogInformation($"FIN - Post request: {request}");
 
             return NoContent();
+
+        }
+
+        [HttpGet("GetNextNumber")]
+        public async Task<int> GetNextNumber()
+        {
+            _logger.LogInformation($"INICIO - GetNextNumber");
+
+            var request = await _iOrderRepository.GetNextNumber();
+
+            _logger.LogInformation($"FIN - GetNextNumber request: {request}");
+
+            return request;
 
         }
     }

@@ -19,6 +19,15 @@ namespace BlazorSistemaVentas.Client.Services
             _logger = logger;
         }
 
+        public async Task DeleteOrder(int id)
+        {
+            _logger.LogInformation($"INICIO - DeleteOrder");
+
+            var result = await _httpclient.DeleteAsync($"api/order/{id}");
+
+            _logger.LogInformation($"FIN - GetDeleteOrderAll result; {result}");
+        }
+
         public async Task<IEnumerable<Order>> GetAll()
         {
             _logger.LogInformation($"INICIO - GetAll");
@@ -62,7 +71,7 @@ namespace BlazorSistemaVentas.Client.Services
             }
             else
             {
-
+                await _httpclient.PutAsJsonAsync<Order>($"api/order/", order);
             }
 
             _logger.LogInformation($"FIN - SaveOrder");

@@ -19,6 +19,7 @@
             <MudTh>Order Date</MudTh>
             <MudTh>Delivery Date</MudTh>
             <MudTh></MudTh>
+            <MudTh></MudTh>
         </HeaderContent>
         <RowTemplate Context="OrderContext">
             <MudTd DataLabel="Number">@OrderContext.OrderNumber</MudTd>
@@ -30,6 +31,14 @@
                 <MudFab OnClick="@(() => Edit(OrderContext.Id))"
                         Color="Color.Primary"
                         Icon="@Icons.Material.Filled.Edit"
+                        Size="Size.Small"
+                        IconSize="Size.Small">
+                </MudFab>
+            </MudTd>
+            <MudTd DataLabel="">
+                <MudFab OnClick="@(() => Delete(OrderContext.Id))"
+                        Color="Color.Secondary"
+                        Icon="@Icons.Material.Filled.Delete"
                         Size="Size.Small"
                         IconSize="Size.Small">
                 </MudFab>
@@ -46,14 +55,14 @@ else
 
 @code {
 
-    public IEnumerable<Order> Orders { get; set; }
+    public List<Order> Orders { get; set; }
     public string Message { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Orders = await OrderService.GetAll();
+            Orders =(List<Order>) await OrderService.GetAll();
 
         }
         catch (Exception e)
@@ -62,9 +71,15 @@ else
         }
     }
 
-    protected async Task Edit(int id) 
+    protected async Task Edit(int id)
     {
         NavigationManager.NavigateTo($"/orderdetails/{id}");
+    }
+
+    protected async Task Delete(int id)
+    {
+        await OrderService.DeleteOrder(id);
+        Orders.RemoveAll(p => p.Id == id);
     }
 
 

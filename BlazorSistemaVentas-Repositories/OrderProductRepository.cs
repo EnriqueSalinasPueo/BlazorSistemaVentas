@@ -41,8 +41,8 @@ namespace BlazorSistemaVentas_Repositories
 
         public async Task<bool> DeleteOrderProductByOrder(int orderId)
         {
-            var sql = @"DELETE FROM  OiderProducts
-                        WHERE Order.Id = @Id";
+            var sql = @"DELETE FROM  OrderProducts
+                        WHERE OrderId = @Id";
 
             _logger.LogInformation($"INICIO - DeleteOrderProductByOrder");
 

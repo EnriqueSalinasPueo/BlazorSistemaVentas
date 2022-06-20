@@ -18,6 +18,18 @@ namespace BlazorSistemaVentas_Repositories
             _logger = logger;
         }
 
+        public  async Task DeleteOrder(int id)
+        {
+            var sql = @"DELETE FROM Orders WHERE Id = @Id";
+
+            _logger.LogInformation($"INICIO - DeleteOrder SQL: {sql}");
+
+            var request = await _dbConnection.ExecuteAsync(sql, new { Id = id });
+
+            _logger.LogInformation($"FIN - DeleteOrder respuesta: {request}");
+            
+        }
+
         public async Task<IEnumerable<Order>> GetAll()
         {
             var sql = @"SELECT  o.Id
@@ -106,6 +118,29 @@ namespace BlazorSistemaVentas_Repositories
 
             return request > 0 ;
 
+        }
+
+        public async Task<bool> UpdateOrder(Order order)
+        {
+            var sql = @"UPDATE Orders 
+                            SET  ClientId = @ClientId, 
+                                OrderDate = @OrderDate, 
+                                DeliveryDate = @DeliveryDate
+                             WHERE Id = @Id";
+
+            _logger.LogInformation($"INICIO - UpdateOrder SQL: {sql}");
+
+            var request = await _dbConnection.ExecuteAsync(sql, new
+            {
+                ClientId = order.ClientId,
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                ID = order.Id
+            });
+
+            _logger.LogInformation($"FIN - UpdateOrder respuesta: {request}");
+
+            return request > 0;
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using BlazorSistemaVentas.Shared;
 using BlazorSistemaVentas_Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,17 +28,17 @@ namespace BlazorSistemaVentas.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Order order)
+        public async Task<IActionResult> Post([FromBody] Order order)
         {
             _logger.LogInformation($"INICIO - Post order: {order}");
 
-            if(order == null)
+            if (order == null)
             {
                 return BadRequest();
             }
             if (order.OrderNumber == 0)
             {
-                ModelState.AddModelError("OrderNumber","Order numbar can`t be empty");
+                ModelState.AddModelError("OrderNumber", "Order numbar can`t be empty");
             }
             if (!ModelState.IsValid)
             {
@@ -52,7 +50,7 @@ namespace BlazorSistemaVentas.Server.Controllers
             {
                 order.Id = await _iOrderRepository.GetNextId();
 
-                await _iOrderRepository.InserOrder(order);
+                var request = await _iOrderRepository.InserOrder(order);
 
                 if (order.Products != null)
                 {
@@ -63,11 +61,9 @@ namespace BlazorSistemaVentas.Server.Controllers
                 }
 
                 scope.Complete();
+
+                _logger.LogInformation($"FIN - Post request: {request}");
             }
-
-                var request = await _iOrderRepository.InserOrder(order);
-
-            _logger.LogInformation($"FIN - Post request: {request}");
 
             return NoContent();
 
@@ -93,6 +89,11 @@ namespace BlazorSistemaVentas.Server.Controllers
 
             var request = await _iOrderRepository.GetAll();
 
+            foreach (var item in request)
+            {
+                item.Products =(List<Product>) await _iOrderProductRepository.GetByOrder(item.Id);
+            }
+
             _logger.LogInformation($"FIN - GetAll request: {request}");
 
             return request;
@@ -109,7 +110,7 @@ namespace BlazorSistemaVentas.Server.Controllers
 
             var products = await _iOrderProductRepository.GetByOrder(id);
 
-            if (order != null )
+            if (order != null)
             {
                 order.Products = products.ToList();
             }
@@ -118,6 +119,57 @@ namespace BlazorSistemaVentas.Server.Controllers
 
             return order;
 
+        }
+
+        [HttpDelete("{id}")]
+        public async Task Delete(int id)
+        {
+            _logger.LogInformation($"INICIO - Delete");
+
+            await _iOrderRepository.DeleteOrder(id);
+
+            _logger.LogInformation($"FIN - Delete");
+        }
+
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] Order order)
+        {
+            _logger.LogInformation($"INICIO - Put order: {order}");
+
+            if (order == null)
+            {
+                return BadRequest();
+            }
+            if (order.OrderNumber == 0)
+            {
+                ModelState.AddModelError("OrderNumber", "Order numbar can`t be empty");
+            }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Usando el objeto TransactionScope si algo va mal dentro del using se hara automaticamente un rollback
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                var request = await _iOrderRepository.UpdateOrder(order);
+
+                await _iOrderProductRepository.DeleteOrderProductByOrder(order.Id);
+
+                if (order.Products != null)
+                {
+                    foreach (var prd in order.Products)
+                    {
+                        await _iOrderProductRepository.InserOrderProduct(order.Id, prd);
+                    }
+                }
+
+                scope.Complete();
+
+                _logger.LogInformation($"FIN - Put request: {request}");
+            }
+            return NoContent();
         }
     }
 }

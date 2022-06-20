@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BlazorSistemaVentas.Server.Controllers
 {
@@ -17,12 +18,14 @@ namespace BlazorSistemaVentas.Server.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _iOrderRepository;
+        private readonly IOrderProductRepository _iOrderProductRepository;
 
         private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IOrderRepository iOrderRepository, ILogger<OrderController> logger)
+        public OrderController(IOrderRepository iOrderRepository, IOrderProductRepository iOrderProductRepository, ILogger<OrderController> logger)
         {
             _iOrderRepository = iOrderRepository;
+            _iOrderProductRepository = iOrderProductRepository;
             _logger = logger;
         }
 
@@ -44,7 +47,25 @@ namespace BlazorSistemaVentas.Server.Controllers
                 return BadRequest(ModelState);
             }
 
-            var request = await _iOrderRepository.InserOrder(order);
+            // Usando el objeto TransactionScope si algo va mal dentro del using se hara automaticamente un rollback
+            using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                order.Id = await _iOrderRepository.GetNextId();
+
+                await _iOrderRepository.InserOrder(order);
+
+                if (order.Products != null)
+                {
+                    foreach (var prd in order.Products)
+                    {
+                        await _iOrderProductRepository.InserOrderProduct(order.Id, prd);
+                    }
+                }
+
+                scope.Complete();
+            }
+
+                var request = await _iOrderRepository.InserOrder(order);
 
             _logger.LogInformation($"FIN - Post request: {request}");
 

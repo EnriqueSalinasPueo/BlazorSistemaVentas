@@ -9,5 +9,6 @@ namespace BlazorSistemaVentas.Client.Services
     public interface IProductService
     {
         Task<IEnumerable<Product>> GetByCategory(int productCategoryId);
+        Task<Product> GetDetails(int id);
     }
 }

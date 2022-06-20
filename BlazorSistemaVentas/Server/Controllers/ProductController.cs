@@ -1,12 +1,9 @@
 ﻿using BlazorSistemaVentas.Shared;
 using BlazorSistemaVentas_Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlazorSistemaVentas.Server.Controllers
@@ -26,17 +23,28 @@ namespace BlazorSistemaVentas.Server.Controllers
             _logger = logger;
         }
 
-
         [HttpGet("getbycategory/{productCategoryId}")]
         public async Task<IEnumerable<Product>> GetByCategory(int productCategoryId)
         {
-            _logger.LogInformation($"INICIO - Get");
+            _logger.LogInformation($"INICIO - GetByCategory");
 
-            IEnumerable<Product> list = await _iProductRepository.GetByCategory(productCategoryId);
+            var request = await _iProductRepository.GetByCategory(productCategoryId);
 
-            _logger.LogInformation($"FIN - Get respuesta: {list}");
+            _logger.LogInformation($"FIN - GetByCategory respuesta: {request}");
 
-            return list;
+            return request;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<Product> GetDetails(int id)
+        {
+            _logger.LogInformation($"INICIO - GetDetails");
+
+            var request = await _iProductRepository.GetDetails(id);
+
+            _logger.LogInformation($"FIN - GetDetails respuesta: {request}");
+
+            return request;
         }
     }
 }

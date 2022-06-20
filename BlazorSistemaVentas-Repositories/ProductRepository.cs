@@ -1,11 +1,8 @@
 ﻿using BlazorSistemaVentas.Shared;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlazorSistemaVentas_Repositories
@@ -28,11 +25,26 @@ namespace BlazorSistemaVentas_Repositories
 
             _logger.LogInformation($"INICIO - GetAll SQL: {sql}");
 
-            IEnumerable<Product> list = await _dbConnection.QueryAsync<Product>(sql, new { Id = productCategoryId });
+            var request = await _dbConnection.QueryAsync<Product>(sql, new { Id = productCategoryId });
 
-            _logger.LogInformation($"FIN - GetAll respuesta: {list}");
+            _logger.LogInformation($"FIN - GetAll respuesta: {request}");
 
-            return list;
+            return request;
+        }
+
+        public async Task<Product> GetDetails(int productId)
+        {
+            var sql = @"SELECT *
+                      FROM Products
+                      WHERE Id = @Id";
+
+            _logger.LogInformation($"INICIO - GetDetails SQL: {sql}");
+
+            var request = await _dbConnection.QueryFirstOrDefaultAsync<Product>(sql, new { Id = productId });
+
+            _logger.LogInformation($"FIN - GetDetails respuesta: {request}");
+
+            return request;
         }
     }
 }

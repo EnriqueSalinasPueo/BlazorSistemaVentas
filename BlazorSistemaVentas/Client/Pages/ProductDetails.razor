@@ -1,6 +1,6 @@
 ﻿@inject IProductCategoryService ProductCategoryService
 @inject IProductService ProductService
-
+@inject ISnackbar Snackbar
 
 @if (ProductCategories != null && products != null)
 {
@@ -18,7 +18,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="">Category</label>
-                                    <InputSelect class="form-control col-sm-5"
+                                    <InputSelect class="form-control"
                                                  Value="@Product.ProductCategoryId"
                                                  ValueChanged="@((int productCategoryId) => ProductCategoryChanged(productCategoryId))"
                                                  ValueExpression="@(() => Product.ProductCategoryId)">
@@ -30,11 +30,14 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="">Product</label>
-                                    <InputSelect class="form-control col-sm-5" @bind-Value="@Product.Id">
+                                    <InputSelect class="form-control"
+                                                 Value="@Product.Id"
+                                                 ValueChanged="@((int id) => ProductChanged(id))"
+                                                 ValueExpression="@(() => Product.Id)">
                                         @foreach (var item in products)
-                                            {
+                                        {
                                             <option value="@item.Id">@item.Name</option>
-                                            }
+                                        }
                                     </InputSelect>
                                 </div>
                             </div>
@@ -53,30 +56,26 @@
                 </div>
             </EditForm>
         </DialogContent>
-
         <DialogActions>
             <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
             <MudButton Color="Color.Primary" OnClick="AddProduct">Add</MudButton>
         </DialogActions>
-
-
     </MudDialog>
 }
-else 
+else
 {
     <p><em>Loading...</em></p>
 }
 
 @code {
 
-    public Product Product = new Product() { ProductCategoryId = 1 };
-    public IEnumerable<ProductCategory> ProductCategories;
-    public IEnumerable<Product> products;
+    public Product Product = new Product();
+    public IEnumerable<ProductCategory> ProductCategories = new List<ProductCategory>();
+    public IEnumerable<Product> products = new List<Product>();
     public string Message { get; set; }
 
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         try
@@ -84,7 +83,12 @@ else
 
             ProductCategories = await ProductCategoryService.GetAll();
 
-            await LoadProducts(Product.ProductCategoryId);
+            if (ProductCategories != null && ProductCategories.Any())
+            {
+                Product.ProductCategoryId = ProductCategories.FirstOrDefault().Id;
+                await LoadProducts(Product.ProductCategoryId);
+            }
+
 
         }
         catch (Exception e)
@@ -99,13 +103,26 @@ else
 
         if (Product.ProductCategoryId > 0)
         {
-            await LoadProducts(Product.ProductCategoryId);
+            await LoadProducts(productCategoryId);
+        }
+    }
+
+    protected async Task ProductChanged(int id)
+    {
+
+        if (id > 0)
+        {
+            Product = await ProductService.GetDetails(id);
         }
     }
 
     private async Task LoadProducts(int productCategoryId)
     {
         products = await ProductService.GetByCategory(productCategoryId);
+        if (products != null && products.Any())
+        {
+            Product = await ProductService.GetDetails(products.FirstOrDefault().Id);
+        }
     }
 
     private void Cancel()
@@ -115,6 +132,7 @@ else
 
     private void AddProduct()
     {
+        Snackbar.Add("Product added", Severity.Success, a => a.VisibleStateDuration = 200);
         MudDialog.Close(DialogResult.Ok(Product));
     }
 

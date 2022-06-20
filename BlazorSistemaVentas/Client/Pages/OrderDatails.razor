@@ -83,6 +83,29 @@
                 </div>
             </div>
         </div>
+
+
+        @if (Order.Products != null && Order.Products.Any())
+        {
+            <MudTable Items="@Order.Products" Hover="true" Breakpoint="Breakpoint.Sm">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6"></MudText>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Price</MudTh>
+                    <MudTh>Quantity</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate Context="ProductContext">
+                    <MudTd DataLabel="Name">@ProductContext.Name</MudTd>
+                    <MudTd DataLabel="Price">@ProductContext.Price</MudTd>
+                    <MudTd DataLabel="Quantity">@ProductContext.Quantity</MudTd>
+                    <MudTd DataLabel=""></MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+
     </EditForm>
 }
 else

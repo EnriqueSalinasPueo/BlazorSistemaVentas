@@ -1,8 +1,6 @@
 ﻿using BlazorSistemaVentas.Shared;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -22,11 +20,22 @@ namespace BlazorSistemaVentas.Client.Services
         {
             _logger.LogInformation($"INICIO - GetByCategory");
 
-            IEnumerable<Product> list = await _httpclient.GetFromJsonAsync<IEnumerable<Product>>($"api/Product/getbycategory/{productCategoryId}");
+            var request = await _httpclient.GetFromJsonAsync<IEnumerable<Product>>($"api/Product/getbycategory/{productCategoryId}");
 
-            _logger.LogInformation($"FIN - GetByCategory respuesta: {list}");
+            _logger.LogInformation($"FIN - GetByCategory respuesta: {request}");
 
-            return list;
+            return request;
+        }
+
+        public async Task<Product> GetDetails(int id)
+        {
+            _logger.LogInformation($"INICIO - GetDetails");
+
+            var request = await _httpclient.GetFromJsonAsync<Product>($"api/Product/{id}");
+
+            _logger.LogInformation($"FIN - GetDetails respuesta: {request}");
+
+            return request;
         }
     }
 }

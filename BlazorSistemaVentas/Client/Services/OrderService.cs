@@ -19,6 +19,17 @@ namespace BlazorSistemaVentas.Client.Services
             _logger = logger;
         }
 
+        public async Task<IEnumerable<Order>> GetAll()
+        {
+            _logger.LogInformation($"INICIO - GetAll");
+
+            var result = await _httpclient.GetFromJsonAsync<IEnumerable<Order>>($"api/order/");
+
+            _logger.LogInformation($"FIN - GetAll result; {result}");
+
+            return result;
+        }
+
         public async Task<int> GetNextNumber()
         {
             _logger.LogInformation($"INICIO - GetNextNumber");

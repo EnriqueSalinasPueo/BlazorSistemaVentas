@@ -10,5 +10,6 @@ namespace BlazorSistemaVentas.Client.Services
     {
         Task SaveOrder(Order order);
         Task<int> GetNextNumber();
+        Task<IEnumerable<Order>> GetAll();
     }
 }

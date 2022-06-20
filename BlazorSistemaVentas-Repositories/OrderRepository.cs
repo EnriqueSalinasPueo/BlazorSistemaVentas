@@ -1,6 +1,7 @@
 ﻿using BlazorSistemaVentas.Shared;
 using Dapper;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -17,13 +18,34 @@ namespace BlazorSistemaVentas_Repositories
             _logger = logger;
         }
 
+        public async Task<IEnumerable<Order>> GetAll()
+        {
+            var sql = @"SELECT  o.Id
+                      ,OrderNumber
+                      ,ClientId
+                      ,OrderDate
+                      ,DeliveryDate
+                      ,Total
+	                  ,c.FirstName + ', ' + c.LastName As ClientName
+                  FROM Orders o 
+                  INNER JOIN Clients c on o.ClientId = c.Id ";
+
+            _logger.LogInformation($"INICIO - GetAll SQL: {sql}");
+
+            var request = await _dbConnection.QueryAsync<Order>(sql, new { });
+
+            _logger.LogInformation($"FIN - GetAll respuesta: {request}");
+
+            return request;
+        }
+
         public async Task<int> GetNextId()
         {
             var sql = @"SELECT IDENT_CURRENT('Orders') + 1";
 
             _logger.LogInformation($"INICIO - GetNextId SQL: {sql}");
 
-            var request = await _dbConnection.ExecuteAsync(sql, new { });
+            var request = await _dbConnection.QueryFirstAsync<int>(sql, new { });
 
             _logger.LogInformation($"FIN - GetNextId respuesta: {request}");
 
@@ -37,7 +59,7 @@ namespace BlazorSistemaVentas_Repositories
 
             _logger.LogInformation($"INICIO - GetNextNumber SQL: {sql}");
 
-            var request = await _dbConnection.ExecuteAsync(sql, new { });
+            var request = await _dbConnection.QueryFirstAsync<int>(sql, new { });
 
             _logger.LogInformation($"FIN - GetNextNumber respuesta: {request}");
 

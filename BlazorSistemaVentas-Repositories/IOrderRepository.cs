@@ -12,5 +12,6 @@ namespace BlazorSistemaVentas_Repositories
         Task<bool> InserOrder(Order order);
         Task<int> GetNextNumber();
         Task<int> GetNextId();
+        Task<IEnumerable<Order>> GetAll();
     }
 }

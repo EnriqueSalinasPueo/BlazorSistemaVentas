@@ -85,5 +85,18 @@ namespace BlazorSistemaVentas.Server.Controllers
             return request;
 
         }
+
+        [HttpGet]
+        public async Task<IEnumerable<Order>> GetAll()
+        {
+            _logger.LogInformation($"INICIO - GetAll");
+
+            var request = await _iOrderRepository.GetAll();
+
+            _logger.LogInformation($"FIN - GetAll request: {request}");
+
+            return request;
+
+        }
     }
 }

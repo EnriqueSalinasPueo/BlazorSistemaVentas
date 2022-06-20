@@ -1,4 +1,5 @@
 ﻿@page "/orderdetails"
+@page "/orderdetails/{id:int}"
 
 @attribute [Authorize]
 
@@ -107,7 +108,7 @@
                                 Color="Color.Secondary"
                                 Icon="@Icons.Material.Filled.Delete"
                                 IconSize="Size.Small">
-                         </MudFab>
+                        </MudFab>
                     </MudTd>
                 </RowTemplate>
             </MudTable>
@@ -127,17 +128,28 @@ else
     public IEnumerable<BlazorSistemaVentas.Shared.Client> clients;
     public string Message { get; set; }
 
+    [Parameter]
+    public int id { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Order = new Order()
+            if (id > 0)
             {
-                OrderNumber = await OrderService.GetNextNumber(),
-                ProductCategoryId = 1,
-                OrderDate = DateTime.Today,
-                DeliveryDate = DateTime.Today
-            };
+
+            }
+            else
+            {
+                Order = new Order()
+                {
+                    OrderNumber = await OrderService.GetNextNumber(),
+                    ProductCategoryId = 1,
+                    OrderDate = DateTime.Today,
+                    DeliveryDate = DateTime.Today
+                };
+
+            }
 
             clients = await ClientService.GetAllClients();
 

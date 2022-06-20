@@ -39,6 +39,26 @@ namespace BlazorSistemaVentas_Repositories
             return request;
         }
 
+        public async Task<Order> GetDetailsId(int id)
+        {
+            var sql = @"SELECT  Id
+                              ,OrderNumber
+                              ,ClientId
+                              ,OrderDate
+                              ,DeliveryDate
+                              ,Total
+                          FROM Orders
+                          WHERE Id = @Id";
+
+            _logger.LogInformation($"INICIO - GetDetailsId SQL: {sql}");
+
+            var request = await _dbConnection.QueryFirstOrDefaultAsync<Order>(sql, new { Id = id});
+
+            _logger.LogInformation($"FIN - GetDetailsId respuesta: {request}");
+
+            return request;
+        }
+
         public async Task<int> GetNextId()
         {
             var sql = @"SELECT IDENT_CURRENT('Orders') + 1";

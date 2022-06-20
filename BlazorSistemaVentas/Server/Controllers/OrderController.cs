@@ -98,5 +98,26 @@ namespace BlazorSistemaVentas.Server.Controllers
             return request;
 
         }
+
+
+        [HttpGet("{id}")]
+        public async Task<Order> GetDetailsId(int id)
+        {
+            _logger.LogInformation($"INICIO - GetDetailsId");
+
+            var order = await _iOrderRepository.GetDetailsId(id);
+
+            var products = await _iOrderProductRepository.GetByOrder(id);
+
+            if (order != null )
+            {
+                order.Products = products.ToList();
+            }
+
+            _logger.LogInformation($"FIN - GetDetailsId request: {order}");
+
+            return order;
+
+        }
     }
 }

@@ -1,8 +1,5 @@
 ﻿using BlazorSistemaVentas.Shared;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlazorSistemaVentas_Repositories
@@ -13,5 +10,6 @@ namespace BlazorSistemaVentas_Repositories
         Task<int> GetNextNumber();
         Task<int> GetNextId();
         Task<IEnumerable<Order>> GetAll();
+        Task<Order> GetDetailsId(int id);
     }
 }
